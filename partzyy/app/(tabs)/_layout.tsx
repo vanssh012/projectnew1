@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { View } from 'react-native';
+import { Text } from 'react-native';
 import { COLORS } from '../../constants/theme';
 
 export default function TabsLayout() {
@@ -27,7 +27,7 @@ export default function TabsLayout() {
         options={{
           title: 'Home',
           tabBarIcon: ({ color }) => (
-            <View style={{ fontSize: 24 }}>🏠</View>
+            <Text style={{ fontSize: 22 }}>🏠</Text>
           ),
         }}
       />
@@ -36,7 +36,7 @@ export default function TabsLayout() {
         options={{
           title: 'Explore',
           tabBarIcon: ({ color }) => (
-            <View style={{ fontSize: 24 }}>🧭</View>
+            <Text style={{ fontSize: 22 }}>🧭</Text>
           ),
         }}
       />
@@ -45,7 +45,7 @@ export default function TabsLayout() {
         options={{
           title: 'Create',
           tabBarIcon: ({ color }) => (
-            <View style={{ fontSize: 24 }}>➕</View>
+            <Text style={{ fontSize: 22 }}>➕</Text>
           ),
         }}
       />
@@ -54,7 +54,7 @@ export default function TabsLayout() {
         options={{
           title: 'Tickets',
           tabBarIcon: ({ color }) => (
-            <View style={{ fontSize: 24 }}>🎟️</View>
+            <Text style={{ fontSize: 22 }}>🎟️</Text>
           ),
         }}
       />
@@ -63,7 +63,7 @@ export default function TabsLayout() {
         options={{
           title: 'Profile',
           tabBarIcon: ({ color }) => (
-            <View style={{ fontSize: 24 }}>👤</View>
+            <Text style={{ fontSize: 22 }}>👤</Text>
           ),
         }}
       />

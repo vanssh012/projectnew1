@@ -1,86 +1,111 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { COLORS, SPACING } from '../../constants/theme';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl, Animated } from 'react-native';
+import { COLORS, SPACING, CATEGORY_LABELS, CATEGORY_SYMBOLS } from '@/constants/theme';
+import { useState, useEffect, useRef } from 'react';
+import { useEvents } from '@/hooks/useEvents';
+import { EventCard } from '@/components/EventCard';
+import { EventCardSmall } from '@/components/EventCardSmall';
+import { AfterlyLogo } from '@/components/AfterlyLogo';
+import { router } from 'expo-router';
+import type { Category } from '@/constants/theme';
 
 export default function HomeScreen() {
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const [selectedCity, setSelectedCity] = useState<string>('');
+
+  const { events, loading, error, refetch } = useEvents({
+    category: selectedCategory || undefined,
+    city: selectedCity || undefined,
+  });
+
+  const categories: Category[] = ['farewell', 'freshers', 'house_party'];
+
+  const fadeAnim = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    if (loading) {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(fadeAnim, { toValue: 0.3, duration: 800, useNativeDriver: true }),
+          Animated.timing(fadeAnim, { toValue: 1, duration: 800, useNativeDriver: true }),
+        ])
+      ).start();
+    } else {
+      fadeAnim.setValue(1);
+    }
+  }, [loading]);
+
   return (
     <View style={[styles.container, { backgroundColor: COLORS.bg.primary }]}>
       <View style={styles.header}>
-        <Text style={styles.appName}>partzyy</Text>
+        <AfterlyLogo size={28} showText={false} />
         <View style={styles.headerIcons}>
           <TouchableOpacity>
-            <Text style={styles.icon}>🔍</Text>
+            <Text style={styles.headerIcon}>🔍</Text>
           </TouchableOpacity>
           <TouchableOpacity>
-            <Text style={styles.icon}>🔔</Text>
+            <Text style={styles.headerIcon}>🔔</Text>
           </TouchableOpacity>
         </View>
       </View>
 
-      <ScrollView 
-        horizontal 
+      <ScrollView
+        horizontal
         showsHorizontalScrollIndicator={false}
         style={styles.categoryPills}
         contentContainerStyle={styles.categoryPillsContent}
       >
-        <TouchableOpacity style={[styles.pill, styles.pillActive]}>
-          <Text style={styles.pillTextActive}>All</Text>
+        <TouchableOpacity
+          style={[styles.pill, !selectedCategory && styles.pillActive]}
+          onPress={() => setSelectedCategory(null)}
+        >
+          <Text style={!selectedCategory ? styles.pillTextActive : styles.pillText}>All</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.pill}>
-          <Text style={styles.pillText}>✦ Farewell</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.pill}>
-          <Text style={styles.pillText}>◈ Freshers</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.pill}>
-          <Text style={styles.pillText}>◉ House Party</Text>
-        </TouchableOpacity>
+        {categories.map((cat) => (
+          <TouchableOpacity
+            key={cat}
+            style={[styles.pill, selectedCategory === cat && styles.pillActive]}
+            onPress={() => setSelectedCategory(cat)}
+          >
+            <Text style={selectedCategory === cat ? styles.pillTextActive : styles.pillText}>
+              {CATEGORY_SYMBOLS[cat]} {CATEGORY_LABELS[cat]}
+            </Text>
+          </TouchableOpacity>
+        ))}
       </ScrollView>
 
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <Text style={styles.sectionLabel}>Featured tonight</Text>
-        
-        <View style={[styles.featuredCard, { backgroundColor: COLORS.bg.surface }]}>
-          <View style={[styles.cardImage, { backgroundColor: COLORS.category.farewell.bg }]} />
-          <View style={styles.cardContent}>
-            <Text style={styles.eventTitle}>Golden Memories Farewell</Text>
-            <Text style={[styles.eventPrice, { color: COLORS.category.farewell.primary }]}>₹299</Text>
-            <View style={styles.metaRow}>
-              <Text style={styles.meta}>📍 IIT Delhi • 23 May</Text>
-            </View>
-            <View style={styles.metaRow}>
-              <Text style={styles.meta}>⭐ 4.8 (124 reviews)</Text>
-            </View>
-            <View style={styles.hostRow}>
-              <View style={[styles.hostAvatar, { backgroundColor: COLORS.category.farewell.primary }]}>
-                <Text style={styles.avatarText}>AB</Text>
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.hostName}>Arjun Bhat ✓</Text>
-                <Text style={styles.hostMeta}>Hosted 8 events • 4.9★</Text>
-              </View>
-              <Text style={styles.spotsText}>12 spots</Text>
-            </View>
-          </View>
-        </View>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        refreshControl={<RefreshControl refreshing={loading} onRefresh={refetch} />}
+      >
+        <Text style={styles.sectionLabel}>featured tonight</Text>
 
-        <Text style={styles.sectionLabel}>Near you</Text>
-        
-        {[1, 2].map((i) => (
-          <View key={i} style={[styles.compactCard, { backgroundColor: COLORS.bg.surface }]}>
-            <View style={[styles.compactImage, { backgroundColor: COLORS.category.freshers.bg }]} />
-            <View style={styles.compactContent}>
-              <Text style={styles.eventTitle}>Freshers Welcome 2024</Text>
-              <Text style={styles.meta}>📍 DTU • 25 May</Text>
-              <View style={styles.hostRow}>
-                <View style={[styles.smallAvatar, { backgroundColor: COLORS.category.freshers.primary }]}>
-                  <Text style={[styles.avatarText, { fontSize: 10 }]}>CD</Text>
-                </View>
-                <Text style={[styles.hostName, { fontSize: 12 }]}>Chloe Davis</Text>
-              </View>
-            </View>
-            <Text style={[styles.eventPrice, { color: COLORS.category.freshers.primary }]}>Free</Text>
+        {loading ? (
+          <>
+            <Animated.View style={[styles.skeletonCard, { backgroundColor: '#1A1A1E', opacity: fadeAnim }]} />
+            <Animated.View style={[styles.skeletonCard, { backgroundColor: '#1A1A1E', opacity: fadeAnim }]} />
+          </>
+        ) : events.length === 0 ? (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>no events near you yet</Text>
           </View>
-        ))}
+        ) : (
+          <>
+            <EventCard event={events[0]} onPress={() => router.push(`/event/${events[0].id}`)} />
+
+            {events.length > 1 && (
+              <>
+                <Text style={styles.sectionLabel}>Near you</Text>
+                {events.slice(1).map((event) => (
+                  <EventCardSmall
+                    key={event.id}
+                    event={event}
+                    onPress={() => router.push(`/event/${event.id}`)}
+                  />
+                ))}
+              </>
+            )}
+          </>
+        )}
       </ScrollView>
     </View>
   );
@@ -98,16 +123,11 @@ const styles = StyleSheet.create({
     paddingTop: SPACING.lg,
     paddingBottom: SPACING.md,
   },
-  appName: {
-    fontSize: 18,
-    fontWeight: '500',
-    color: COLORS.text.primary,
-  },
   headerIcons: {
     flexDirection: 'row',
     gap: SPACING.md,
   },
-  icon: {
+  headerIcon: {
     fontSize: 20,
   },
   categoryPills: {
@@ -121,120 +141,48 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,
     borderRadius: 20,
-    backgroundColor: COLORS.bg.elevated,
+    backgroundColor: '#1A1A1E',
     borderWidth: 0.5,
-    borderColor: '#333',
+    borderColor: '#2A2A2E',
   },
   pillActive: {
-    backgroundColor: COLORS.text.primary,
-    borderColor: COLORS.text.primary,
+    backgroundColor: '#F0EEE8',
+    borderColor: '#F0EEE8',
   },
   pillText: {
     fontSize: 13,
-    color: '#BBB',
+    color: '#888',
   },
   pillTextActive: {
     fontSize: 13,
-    color: COLORS.bg.primary,
+    color: '#0E0E10',
     fontWeight: '500',
   },
   sectionLabel: {
     fontSize: 10,
     fontWeight: '500',
-    color: COLORS.text.muted,
+    color: '#555',
     textTransform: 'uppercase',
     letterSpacing: 0.8,
     paddingHorizontal: SPACING.lg,
     paddingTop: SPACING.lg,
     paddingBottom: SPACING.md,
   },
-  featuredCard: {
+  skeletonCard: {
     marginHorizontal: SPACING.lg,
     marginBottom: SPACING.lg,
     borderRadius: 18,
-    overflow: 'hidden',
-    borderWidth: 0.5,
-    borderColor: COLORS.bg.border,
+    height: 270,
   },
-  cardImage: {
-    height: 190,
-  },
-  cardContent: {
-    padding: SPACING.lg,
-  },
-  eventTitle: {
-    fontSize: 15,
-    fontWeight: '500',
-    color: COLORS.text.primary,
-    marginBottom: SPACING.sm,
-  },
-  eventPrice: {
-    fontSize: 13,
-    fontWeight: '500',
-    marginBottom: SPACING.sm,
-  },
-  metaRow: {
-    marginBottom: SPACING.sm,
-  },
-  meta: {
-    fontSize: 11,
-    color: COLORS.text.secondary,
-  },
-  hostRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: SPACING.md,
-    gap: SPACING.sm,
-  },
-  hostAvatar: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  smallAvatar: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  avatarText: {
-    fontSize: 12,
-    fontWeight: '500',
-    color: COLORS.bg.primary,
-  },
-  hostName: {
-    fontSize: 13,
-    fontWeight: '500',
-    color: COLORS.text.primary,
-  },
-  hostMeta: {
-    fontSize: 11,
-    color: COLORS.text.secondary,
-  },
-  spotsText: {
-    fontSize: 11,
-    fontWeight: '500',
-    color: COLORS.text.muted,
-  },
-  compactCard: {
-    marginHorizontal: SPACING.lg,
-    marginBottom: SPACING.md,
-    borderRadius: 14,
-    flexDirection: 'row',
-    overflow: 'hidden',
-    borderWidth: 0.5,
-    borderColor: COLORS.bg.border,
-  },
-  compactImage: {
-    width: 72,
-    height: 72,
-  },
-  compactContent: {
+  emptyContainer: {
     flex: 1,
-    padding: SPACING.md,
     justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 100,
+  },
+  emptyText: {
+    fontSize: 13,
+    color: '#555',
+    textAlign: 'center',
   },
 });
