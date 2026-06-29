@@ -1,0 +1,219 @@
+/* ===== RESET & BASE ===== */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* Hide scrollbar for a cleaner Apple-like look (optional, but good for aesthetics) */
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+html::-webkit-scrollbar {
+  display: none;
+}
+
+:root {
+  --bg-primary: #000000;
+  --bg-secondary: #0A0A0A;
+  --bg-card: #111111;
+  --border: rgba(255, 255, 255, 0.08);
+  --text-primary: #FFFFFF;
+  --text-secondary: rgba(255, 255, 255, 0.5);
+  --text-muted: rgba(255, 255, 255, 0.25);
+  --gold: #C9A050;
+  --teal: #5ABFCF;
+  --purple: #B07AE0;
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  /* We use custom cursor, so we can hide default cursor on desktop */
+  cursor: none; 
+}
+
+/* Links & Buttons also need cursor: none if we are overriding it */
+a, button, input, select {
+  cursor: none; 
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  transition: all 0.25s ease;
+}
+
+/* Typography base */
+p, div {
+  font-weight: 400;
+  font-size: 16px;
+  color: var(--text-secondary);
+}
+@media (min-width: 900px) {
+  p, div {
+    font-size: 17px;
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-primary);
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes loadFadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Page load animation for main wrappers */
+.page-load-animate {
+  animation: loadFadeUp 0.6s ease-out forwards;
+}
+
+/* ===== SCROLL FADE (Intersection Observer) ===== */
+.fade-section {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.fade-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== LAYOUT & SPACING ===== */
+.section {
+  padding: 80px 24px;
+}
+@media (min-width: 900px) {
+  .section {
+    padding: 140px 60px;
+  }
+}
+
+/* ===== UTILITIES ===== */
+.label {
+  font-weight: 300;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.headline-hero {
+  font-weight: 700;
+  font-size: clamp(52px, 8vw, 96px);
+  letter-spacing: -3px;
+  line-height: 1.0;
+  color: var(--text-primary);
+}
+
+.headline-section {
+  font-weight: 500;
+  font-size: clamp(32px, 5vw, 56px);
+  letter-spacing: -1.5px;
+  color: var(--text-primary);
+}
+
+/* ===== MARQUEE TICKER ===== */
+.marquee-container {
+  overflow: hidden;
+  white-space: nowrap;
+  width: 100vw;
+  border-top: 0.5px solid var(--border);
+  border-bottom: 0.5px solid var(--border);
+  padding: 12px 0;
+  position: relative;
+  background: var(--bg-primary);
+}
+
+.marquee-content {
+  display: inline-block;
+  animation: marquee 30s linear infinite;
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: rgba(255, 255, 255, 0.2);
+  text-transform: uppercase;
+  font-weight: 400;
+}
+/* Pause on hover (optional, user didn't ask but good practice) */
+.marquee-container:hover .marquee-content {
+  animation-play-state: paused;
+}
+
+/* ===== BUTTONS ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  font-weight: 500;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn:hover {
+  transform: scale(1.02);
+}
+
+.btn-primary {
+  background: var(--text-primary);
+  color: var(--bg-primary);
+  padding: 16px 32px;
+  font-size: 16px;
+}
+.btn-primary:hover {
+  background: rgba(255,255,255,0.9);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 0.5px solid var(--border);
+  padding: 16px 32px;
+  font-size: 16px;
+}
+.btn-secondary:hover {
+  border-color: rgba(255,255,255,0.3);
+  color: var(--text-primary);
+}
+
+.btn-pill {
+  background: rgba(255,255,255,0.08);
+  color: var(--text-primary);
+  border: 0.5px solid rgba(255,255,255,0.12);
+  border-radius: 100px;
+  padding: 8px 20px;
+  font-size: 14px;
+}
+.btn-pill:hover {
+  background: rgba(255,255,255,0.15);
+}
