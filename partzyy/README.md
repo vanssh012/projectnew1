@@ -1,4 +1,4 @@
-# Partzyy
+# Afterly
 
 **India's platform for discovering and hosting curated college social events.**
 
@@ -19,7 +19,7 @@ A React Native (Expo) mobile app + Next.js website for three event categories:
 ### Installation
 
 ```bash
-cd partzyy
+cd afterly
 
 # Install dependencies
 npm install
@@ -42,14 +42,14 @@ npx eas build --platform android --profile preview
 npx eas build --platform ios --profile preview
 
 # Website
-cd ../partzyy-web
+cd ../afterly-web
 vercel --prod
 ```
 
 ## 📁 Project Structure
 
 ```
-partzyy/
+afterly/
 ├── app/
 │   ├── (auth)/           # Auth flows
 │   ├── (tabs)/           # Main navigation

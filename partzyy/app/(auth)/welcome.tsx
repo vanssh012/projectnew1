@@ -1,6 +1,7 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { COLORS, SPACING } from '../../constants/theme';
+import { AfterlyLogo } from '../../components/AfterlyLogo';
 
 export default function WelcomeScreen() {
   const router = useRouter();
@@ -8,8 +9,8 @@ export default function WelcomeScreen() {
   return (
     <View style={[styles.container, { backgroundColor: COLORS.bg.primary }]}>
       <View style={styles.content}>
-        <Text style={styles.logo}>partzyy</Text>
-        <Text style={styles.tagline}>Your next unforgettable night, one tap away</Text>
+        <AfterlyLogo size={48} showText={true} />
+        <Text style={styles.tagline}>your people. your night.</Text>
         
         <View style={styles.categoryContainer}>
           <View style={[styles.categoryCard, { borderColor: COLORS.category.farewell.primary }]}>
@@ -33,6 +34,13 @@ export default function WelcomeScreen() {
       >
         <Text style={styles.buttonText}>Get Started</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity 
+        style={styles.skipButton}
+        onPress={() => router.replace('/(tabs)')}
+      >
+        <Text style={styles.skipButtonText}>Continue as Guest</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -50,18 +58,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
   },
-  logo: {
-    fontSize: 48,
-    fontWeight: '500',
-    color: COLORS.text.primary,
-    marginBottom: SPACING.lg,
-  },
   tagline: {
-    fontSize: 18,
-    color: COLORS.text.secondary,
-    textAlign: 'center',
+    fontSize: 13,
+    color: '#888',
+    fontWeight: '400',
+    fontStyle: 'italic',
+    letterSpacing: 0.3,
     marginBottom: SPACING.xxl,
-    lineHeight: 24,
   },
   categoryContainer: {
     gap: SPACING.md,
@@ -94,5 +97,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
     color: COLORS.bg.primary,
+  },
+  skipButton: {
+    paddingVertical: SPACING.sm,
+    marginBottom: SPACING.lg,
+  },
+  skipButtonText: {
+    fontSize: 14,
+    color: '#666',
+    fontWeight: '500',
   },
 });

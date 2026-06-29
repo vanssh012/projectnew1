@@ -63,6 +63,10 @@ export default function PhoneScreen() {
           {loading ? 'Sending...' : 'Send OTP'}
         </Text>
       </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => router.replace('/(tabs)')}>
+        <Text style={styles.skipText}>Skip authentication</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -120,5 +124,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
     color: COLORS.bg.primary,
+  },
+  skipText: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: SPACING.md,
   },
 });
