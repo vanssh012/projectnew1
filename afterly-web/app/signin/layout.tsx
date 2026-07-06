@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://afterlydemo.loca.lt"),
-  title: "Host — Afterly",
+  title: "Sign In — Afterly",
   openGraph: { siteName: "Afterly", images: ["/og-image.png"] },
 };
 
-export default function HostMetaLayout({ children }: { children: React.ReactNode }) {
+export default function SignInLayout({ children }: { children: React.ReactNode }) {
   return children;
 }

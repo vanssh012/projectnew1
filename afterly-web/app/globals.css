@@ -217,3 +217,7 @@ h1, h2, h3, h4, h5, h6 {
 .btn-pill:hover {
   background: rgba(255,255,255,0.15);
 }
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

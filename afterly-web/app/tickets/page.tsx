@@ -52,9 +52,9 @@ export default function TicketsPage() {
             <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
               {tickets.map(ticket => {
                 const event = ticket.events;
-                const title = event.title || event.name;
-                const date = event.event_date || event.date;
-                const location = event.city || event.venue;
+                const title = event?.title || event?.name || "Event";
+                const date = event?.event_date || event?.date;
+                const location = event?.city || event?.venue;
 
                 return (
                   <div key={ticket.id} style={{ background: "var(--bg-card)", border: "0.5px solid rgba(255,255,255,0.08)", borderRadius: 20, overflow: "hidden", display: "flex", flexDirection: "column" }}>
@@ -85,7 +85,7 @@ export default function TicketsPage() {
                         </div>
                         <div style={{ padding: 8, background: "#FFF", borderRadius: 8, border: "0.5px solid rgba(0,0,0,0.1)" }}>
                           <QRCodeSVG 
-                            value={ticket.qr_uuid || ticket.id} 
+                            value={`afterly:${ticket.id}:${ticket.event_id}`}
                             size={80}
                             bgColor={"#ffffff"}
                             fgColor={"#000000"}

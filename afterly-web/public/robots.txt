@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /host/dashboard
+Disallow: /tickets
+Disallow: /profile
+Sitemap: https://afterlydemo.loca.lt/sitemap.xml

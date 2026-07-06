@@ -1,14 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import Link from "next/link";
 import Navbar from "../../../components/Navbar";
 import Footer from "../../../components/Footer";
 import Scanner from "../../../components/Scanner";
-import { supabase } from "../../../../lib/supabase";
+import { supabase, updateTicketStatus, checkInTicket } from "../../../../lib/supabase";
 import { useToast } from "../../../components/ToastProvider";
 
-export default function HostDashboardPage({ params }: { params: { eventId: string } }) {
+import AuthGuard from "../../../components/AuthGuard";
+
+export default function HostDashboardPage({ params }: { params: Promise<{ eventId: string }> }) {
+  const resolvedParams = use(params);
+  const eventId = resolvedParams.eventId;
   const [activeTab, setActiveTab] = useState<"requests" | "approved" | "scan" | "details">("requests");
   const [event, setEvent] = useState<any>(null);
   const [requests, setRequests] = useState<any[]>([]);
@@ -21,24 +25,29 @@ export default function HostDashboardPage({ params }: { params: { eventId: strin
 
   const fetchData = async () => {
     try {
-      // 1. Fetch Event
       const { data: eventData } = await supabase
         .from('event_with_stats')
         .select('*')
-        .eq('id', params.eventId)
+        .eq('id', eventId)
         .single();
-      
-      if (eventData) setEvent(eventData);
 
-      // 2. Fetch Tickets
+      if (eventData && Array.isArray(eventData)) {
+        setEvent(eventData[0] || null);
+      } else if (eventData) {
+        setEvent(eventData);
+      } else {
+        setEvent(null);
+      }
+
       const { data: tickets } = await supabase
         .from('tickets')
         .select('*, profiles(id, full_name, college)')
-        .eq('event_id', params.eventId);
+        .eq('event_id', eventId);
 
-      if (tickets) {
-        setRequests(tickets.filter(t => t.status === 'pending'));
-        setApproved(tickets.filter(t => t.status === 'approved' || t.status === 'checked-in'));
+      const ticketList = Array.isArray(tickets) ? tickets : [];
+      if (ticketList) {
+        setRequests(ticketList.filter((t: any) => t.status === 'pending'));
+        setApproved(ticketList.filter((t: any) => t.status === 'approved' || t.status === 'checked-in'));
       }
     } catch (err) {
       console.error(err);
@@ -48,25 +57,23 @@ export default function HostDashboardPage({ params }: { params: { eventId: strin
   };
 
   useEffect(() => {
+    if (!eventId) return;
     fetchData();
 
     const channel = supabase
       .channel('dashboard_updates')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'tickets', filter: `event_id=eq.${params.eventId}` }, () => fetchData())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'tickets', filter: `event_id=eq.${eventId}` }, () => fetchData())
       .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [params.eventId]);
+  }, [eventId]);
 
   const handleApprove = async (req: any) => {
     setLoadingId(req.id);
-    const { error } = await supabase
-      .from('tickets')
-      .update({ status: 'approved' })
-      .eq('id', req.id);
-      
+    const { error } = updateTicketStatus(req.id, 'approved');
+
     if (!error) {
       showToast(`Approved ${req.profiles?.full_name} ✓`);
       fetchData();
@@ -77,11 +84,8 @@ export default function HostDashboardPage({ params }: { params: { eventId: strin
   };
 
   const handleReject = async (id: string) => {
-    const { error } = await supabase
-      .from('tickets')
-      .update({ status: 'rejected' })
-      .eq('id', id);
-    
+    const { error } = updateTicketStatus(id, 'rejected');
+
     if (!error) {
       showToast('Request rejected');
       fetchData();
@@ -91,17 +95,10 @@ export default function HostDashboardPage({ params }: { params: { eventId: strin
 
   const handleScanSuccess = async (decodedText: string) => {
     try {
-      // The decoded text should be the ticket qr_uuid or id
-      const { data, error } = await supabase
-        .from('tickets')
-        .update({ status: 'checked-in' })
-        .eq('qr_uuid', decodedText)
-        .eq('event_id', params.eventId)
-        .select()
-        .single();
-      
-      if (data) {
+      const result = checkInTicket(decodedText, eventId);
+      if (!result.error) {
         showToast('Guest Checked In! ✅');
+        fetchData();
       } else {
         showToast('Invalid or unrecognized QR code ❌');
       }
@@ -119,7 +116,8 @@ export default function HostDashboardPage({ params }: { params: { eventId: strin
   }
 
   return (
-    <div className="page-load-animate" style={{ display: "flex", flexDirection: "column", minHeight: "100vh", background: "var(--bg-primary)" }}>
+    <AuthGuard>
+      <div className="page-load-animate" style={{ display: "flex", flexDirection: "column", minHeight: "100vh", background: "var(--bg-primary)" }}>
       <Navbar />
 
       <main style={{ flex: 1, padding: "40px 24px 100px" }}>
@@ -410,6 +408,7 @@ export default function HostDashboardPage({ params }: { params: { eventId: strin
           }
         }
       `}</style>
-    </div>
+      </div>
+    </AuthGuard>
   );
 }

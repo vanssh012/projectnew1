@@ -19,7 +19,6 @@ export default function Footer() {
           gap: 48,
         }}
       >
-        {/* Left */}
         <div>
           <div
             style={{
@@ -37,7 +36,6 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Right Links */}
         <div
           style={{
             display: "grid",
@@ -48,34 +46,64 @@ export default function Footer() {
           }}
         >
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            <div className="label" style={{ marginBottom: 8 }}>Product</div>
-            <Link href="/farewell" className="footer-link">Farewell</Link>
-            <Link href="/freshers" className="footer-link">Freshers</Link>
-            <Link href="/house-party" className="footer-link">House Party</Link>
-            <Link href="/explore" className="footer-link">Explore</Link>
+            <div className="label" style={{ marginBottom: 8 }}>
+              Product
+            </div>
+            <Link href="/farewell" className="footer-link">
+              Farewell
+            </Link>
+            <Link href="/freshers" className="footer-link">
+              Freshers
+            </Link>
+            <Link href="/house-party" className="footer-link">
+              House Party
+            </Link>
+            <Link href="/explore" className="footer-link">
+              Explore
+            </Link>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            <div className="label" style={{ marginBottom: 8 }}>Hosts</div>
-            <Link href="/host" className="footer-link">Host an Event</Link>
-            <Link href="#" className="footer-link">Pricing</Link>
-            <Link href="#" className="footer-link">Dashboard</Link>
+            <div className="label" style={{ marginBottom: 8 }}>
+              Hosts
+            </div>
+            <Link href="/host" className="footer-link">
+              Host an Event
+            </Link>
+            <Link href="/pricing" className="footer-link">
+              Pricing
+            </Link>
+            <Link href="/host/dashboard" className="footer-link">
+              Dashboard
+            </Link>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            <div className="label" style={{ marginBottom: 8 }}>Company</div>
-            <Link href="#" className="footer-link">About</Link>
-            <Link href="#" className="footer-link">Safety</Link>
-            <Link href="#" className="footer-link">Blog</Link>
+            <div className="label" style={{ marginBottom: 8 }}>
+              Company
+            </div>
+            <Link href="/about" className="footer-link">
+              About
+            </Link>
+            <Link href="/safety" className="footer-link">
+              Safety
+            </Link>
+            <Link href="/blog" className="footer-link">
+              Blog
+            </Link>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            <div className="label" style={{ marginBottom: 8 }}>Legal</div>
-            <Link href="#" className="footer-link">Terms</Link>
-            <Link href="#" className="footer-link">Privacy</Link>
-            <Link href="#" className="footer-link">Cookies</Link>
+            <div className="label" style={{ marginBottom: 8 }}>
+              Legal
+            </div>
+            <Link href="/terms" className="footer-link">
+              Terms
+            </Link>
+            <Link href="/privacy" className="footer-link">
+              Privacy
+            </Link>
           </div>
         </div>
       </div>
 
-      {/* Bottom */}
       <div
         style={{
           maxWidth: 1200,
@@ -91,7 +119,7 @@ export default function Footer() {
           color: "rgba(255,255,255,0.25)",
         }}
       >
-        <div>© 2025 Afterly</div>
+        <div>© 2026 Afterly</div>
         <div>made for college india</div>
       </div>
 

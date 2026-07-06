@@ -82,7 +82,7 @@ export default function Navbar() {
       {/* Right */}
       <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
         <Link
-          href="/host"
+          href="/host/dashboard"
           style={{
             fontSize: 14,
             color: "rgba(255,255,255,0.5)",
@@ -90,7 +90,7 @@ export default function Navbar() {
           }}
           className="nav-link-host"
         >
-          host →
+          Dashboard
         </Link>
         <Link href="/signin" className="btn-pill">
           sign in

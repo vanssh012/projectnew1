@@ -4,6 +4,15 @@ import { useEffect, useState } from "react";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ScrollReveal from "./components/ScrollReveal";
+import { FALLBACK_EVENTS } from "../lib/fallback";
+
+function formatHeroDate(dateStr: string): string {
+  try {
+    return new Date(dateStr).toLocaleDateString("en-US", { month: "long", day: "numeric" });
+  } catch {
+    return dateStr;
+  }
+}
 
 export default function LandingPage() {
   const [scrollY, setScrollY] = useState(0);
@@ -15,6 +24,9 @@ export default function LandingPage() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const card1 = FALLBACK_EVENTS[0];
+  const card2 = FALLBACK_EVENTS[1];
 
   return (
     <div className="page-load-animate">
@@ -82,8 +94,10 @@ export default function LandingPage() {
                 <span style={{ position: "absolute", top: 12, left: 12, background: "#FFF", color: "#000", fontSize: 10, fontWeight: 600, padding: "4px 10px", borderRadius: 100, textTransform: "uppercase" }}>Farewell</span>
               </div>
               <div style={{ padding: 16 }}>
-                <div style={{ fontSize: 15, fontWeight: 500, color: "#FFF", marginBottom: 8 }}>The Last Dance '25</div>
-                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>June 14 · Delhi NCR</div>
+                <div style={{ fontSize: 15, fontWeight: 500, color: "#FFF", marginBottom: 8 }}>{card1.title}</div>
+                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>
+                  {formatHeroDate(card1.event_date)} · {card1.city}
+                </div>
               </div>
             </div>
 
@@ -103,8 +117,10 @@ export default function LandingPage() {
                 <span style={{ position: "absolute", top: 12, left: 12, background: "#FFF", color: "#000", fontSize: 10, fontWeight: 600, padding: "4px 10px", borderRadius: 100, textTransform: "uppercase" }}>Freshers</span>
               </div>
               <div style={{ padding: 16 }}>
-                <div style={{ fontSize: 15, fontWeight: 500, color: "#FFF", marginBottom: 8 }}>Neon Night</div>
-                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>July 2 · Bangalore</div>
+                <div style={{ fontSize: 15, fontWeight: 500, color: "#FFF", marginBottom: 8 }}>{card2.title}</div>
+                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>
+                  {formatHeroDate(card2.event_date)} · {card2.city}
+                </div>
               </div>
             </div>
           </div>

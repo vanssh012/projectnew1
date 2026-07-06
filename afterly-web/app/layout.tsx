@@ -11,9 +11,14 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://afterlydemo.loca.lt"),
   title: "Afterly — Your People. Your Night.",
   description:
     "Discover and host curated college events — farewells, freshers nights, and themed house parties. Verified hosts, approval-based entry, unforgettable nights.",
+  openGraph: {
+    siteName: "Afterly",
+    images: ["/og-image.png"],
+  },
 };
 
 export default function RootLayout({

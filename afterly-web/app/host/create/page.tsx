@@ -1,9 +1,11 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import EventCard from "../../components/EventCard";
+import AuthGuard from "../../components/AuthGuard";
+import { createEvent } from "../../../lib/supabase";
 
 function CreateEventForm() {
   const router = useRouter();
@@ -72,14 +74,36 @@ function CreateEventForm() {
     });
   };
 
-  const handlePublish = () => {
+  const handlePublish = async () => {
     setIsPublishing(true);
-    // Simulate Supabase INSERT delay
-    setTimeout(() => {
-      // Mock generated ID
-      const mockEventId = "evt_" + Math.random().toString(36).substring(2, 9);
-      router.push(`/host/dashboard/${mockEventId}`);
-    }, 2000);
+
+    try {
+      const result = await createEvent({
+        name: formData.name,
+        category: type,
+        college: formData.college,
+        batch: formData.batch,
+        event_date: formData.date,
+        event_time: formData.time,
+        venue: formData.venue,
+        city: formData.city,
+        max_guests: Number(formData.maxGuests || 0),
+        ticket_price: formData.isFree ? 0 : Number(formData.price || 0) * 100,
+        host_name: "You",
+        description: formData.description,
+        status: "published",
+        tags: formData.tags,
+      });
+
+      if (result.error || !result.event) {
+        throw new Error("Unable to publish event");
+      }
+
+      router.push(`/host/dashboard/${result.event.id}`);
+    } catch (error) {
+      console.error(error);
+      setIsPublishing(false);
+    }
   };
 
   return (
@@ -573,8 +597,10 @@ function CreateEventForm() {
 
 export default function CreateEventPage() {
   return (
-    <Suspense fallback={<div style={{ minHeight: "100vh", background: "#000" }} />}>
-      <CreateEventForm />
-    </Suspense>
+    <AuthGuard>
+      <Suspense fallback={<div style={{ minHeight: "100vh", background: "#000" }} />}>
+        <CreateEventForm />
+      </Suspense>
+    </AuthGuard>
   );
 }
