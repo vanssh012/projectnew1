@@ -64,9 +64,20 @@ const TICKETS_STORAGE_KEY = 'afterly_local_tickets';
 const AUTH_STORAGE_KEY = 'afterly_local_auth';
 const OTP_STORAGE_KEY = 'afterly_local_otp';
 
+const generateId = (): string => {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+};
+
 const seedEvents: EventRecord[] = [
   {
-    id: 'seed_1',
+    id: '083497be-7354-4234-a19b-5b77393c8d35',
     name: 'The Last Dance',
     category: 'farewell',
     event_date: '2026-07-14',
@@ -82,7 +93,7 @@ const seedEvents: EventRecord[] = [
     tags: ['DJ Night', 'Rooftop'],
   },
   {
-    id: 'seed_2',
+    id: '6746a337-f4ba-4f75-ad2b-0dad62938b28',
     name: 'Neon Freshers Night',
     category: 'freshers',
     event_date: '2026-07-20',
@@ -98,7 +109,7 @@ const seedEvents: EventRecord[] = [
     tags: ['Neon Theme', 'Games'],
   },
   {
-    id: 'seed_3',
+    id: '62dc2efd-84cd-43dd-b967-31da078164fe',
     name: 'Midnight Mirage',
     category: 'house_party',
     event_date: '2026-08-01',
@@ -286,7 +297,7 @@ class FallbackSupabaseClient {
       if (query['operation'] === 'insert') {
         const inserted = {
           ...(query['insertValues'] || {}),
-          id: (query['insertValues'] as any)?.id || `evt_${Math.random().toString(36).slice(2, 9)}`,
+          id: generateId(),
           created_at: new Date().toISOString(),
         } as EventRecord & { created_at?: string };
         const next = [inserted, ...events];
@@ -418,7 +429,7 @@ export const clearStoredUser = () => writeStorage(AUTH_STORAGE_KEY, null);
 
 export const createEvent = async (eventData: Partial<EventRecord>) => {
   const event: EventRecord = {
-    id: eventData.id || `evt_${Math.random().toString(36).slice(2, 9)}`,
+    id: eventData.id || generateId(),
     name: eventData.name || 'Untitled Event',
     title: eventData.name || 'Untitled Event',
     category: eventData.category || 'farewell',

@@ -52,6 +52,11 @@ export default function DashboardIndexPage() {
       }
     };
     load();
+
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 5000);
+    return () => clearTimeout(timeout);
   }, []);
 
   return (

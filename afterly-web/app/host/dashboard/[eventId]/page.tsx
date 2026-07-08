@@ -65,8 +65,12 @@ export default function HostDashboardPage({ params }: { params: Promise<{ eventI
       .on('postgres_changes', { event: '*', schema: 'public', table: 'tickets', filter: `event_id=eq.${eventId}` }, () => fetchData())
       .subscribe();
 
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 5000);
     return () => {
       supabase.removeChannel(channel);
+      clearTimeout(timeout);
     };
   }, [eventId]);
 

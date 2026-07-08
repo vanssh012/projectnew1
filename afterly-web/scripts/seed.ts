@@ -35,7 +35,7 @@ async function seed() {
 
   if (existing && existing.length > 0) {
     console.log('⚠️  Events table already has data. Skipping seed to avoid duplicates.');
-    console.log('   Run: DELETE FROM events WHERE host_id = \'00000000-0000-0000-0000-000000000001\'; to reset.');
+    console.log("   Run: DELETE FROM events WHERE host_id = '083497be-7354-4234-a19b-5b77393c8d35' OR host_id = '6746a337-f4ba-4f75-ad2b-0dad62938b28' OR host_id = '62dc2efd-84cd-43dd-b967-31da078164fe'; to reset.");
     process.exit(0);
   }
 
@@ -43,7 +43,7 @@ async function seed() {
     .from('events')
     .insert([
       {
-        host_id: '00000000-0000-0000-0000-000000000001',
+        host_id: '083497be-7354-4234-a19b-5b77393c8d35',
         category: 'farewell',
         title: 'Golden Memories Farewell Night',
         theme_description: 'Retro Bollywood night — mandatory ethnic outfit, photo booth, dinner.',
@@ -62,7 +62,7 @@ async function seed() {
         status: 'published',
       },
       {
-        host_id: '00000000-0000-0000-0000-000000000001',
+        host_id: '6746a337-f4ba-4f75-ad2b-0dad62938b28',
         category: 'freshers',
         title: 'Welcome to the Jungle — Freshers Night 2025',
         theme_description: 'Neon jungle theme — neon or animal print, games, DJ, free dinner.',
@@ -81,7 +81,7 @@ async function seed() {
         status: 'published',
       },
       {
-        host_id: '00000000-0000-0000-0000-000000000001',
+        host_id: '62dc2efd-84cd-43dd-b967-31da078164fe',
         category: 'house_party',
         title: 'Retro Neon House Party',
         theme_description: '90s retro meets neon rave. BYOB, rooftop after midnight.',

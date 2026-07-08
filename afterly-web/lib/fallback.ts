@@ -24,7 +24,7 @@ export type FallbackEvent = {
 
 export const FALLBACK_EVENTS: FallbackEvent[] = [
   {
-    id: 'seed-1',
+    id: '083497be-7354-4234-a19b-5b77393c8d35',
     category: 'farewell',
     title: 'Golden Memories Farewell Night',
     college: 'DTU Delhi',
@@ -47,9 +47,9 @@ export const FALLBACK_EVENTS: FallbackEvent[] = [
     theme_description: 'Retro Bollywood night — mandatory ethnic outfit, photo booth, dinner.',
   },
   {
-    id: 'seed-2',
+    id: '6746a337-f4ba-4f75-ad2b-0dad62938b28',
     category: 'freshers',
-    title: 'Welcome to the Jungle — Freshers 2025',
+    title: 'Welcome to the Jungle — Freshers Night 2025',
     college: 'IIT Delhi',
     batch: 'Batch of 2029',
     venue: 'Hauz Khas, New Delhi',
@@ -70,7 +70,7 @@ export const FALLBACK_EVENTS: FallbackEvent[] = [
     theme_description: 'Neon jungle theme — wear neon or animal print. DJ, games, dinner.',
   },
   {
-    id: 'seed-3',
+    id: '62dc2efd-84cd-43dd-b967-31da078164fe',
     category: 'house_party',
     title: 'Retro Neon House Party',
     college: null,

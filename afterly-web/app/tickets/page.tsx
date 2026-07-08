@@ -14,7 +14,10 @@ export default function TicketsPage() {
   useEffect(() => {
     const fetchTickets = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
+      if (!session) {
+        setLoading(false);
+        return;
+      }
 
       const { data, error } = await supabase
         .from('tickets')
@@ -27,6 +30,11 @@ export default function TicketsPage() {
       }
       setLoading(false);
     };
+
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 5000);
+    return () => clearTimeout(timeout);
 
     fetchTickets();
   }, []);
