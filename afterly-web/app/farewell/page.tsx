@@ -1,47 +1,25 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-import EventCard from "../components/EventCard";
-import ScrollReveal from "../components/ScrollReveal";
-import { supabase } from "../../lib/supabase";
-import { getFallbackCards, fetchEvents } from "../../lib/events";
+'use client'
+import { useState, useEffect } from 'react'
+import Navbar from "../components/Navbar"
+import Footer from "../components/Footer"
+import EventCard from "../components/EventCard"
+import ScrollReveal from "../components/ScrollReveal"
+import { fetchEvents } from "../../lib/fetchEvents"
+import { FALLBACK_EVENTS } from "../../lib/fallback"
 
 export default function FarewellPage() {
-  const [events, setEvents] = useState(() => getFallbackCards("farewell"));
-  const [loading, setLoading] = useState(true);
+  const [events, setEvents] = useState(FALLBACK_EVENTS)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const load = async () => {
-      try {
-        const data = await fetchEvents("farewell");
-        const fallback = getFallbackCards("farewell");
-        setEvents(data.length > 0 ? data : fallback);
-      } catch {
-        setEvents(getFallbackCards("farewell"));
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
-
-    const channel = supabase
-      .channel("events_farewell")
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "events" }, () => load())
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setLoading(false);
-    }, 5000);
-    return () => clearTimeout(timeout);
-  }, []);
+    const timer = setTimeout(() => setLoading(false), 4000)
+    fetchEvents("farewell").then(data => {
+      setEvents(data)
+      setLoading(false)
+      clearTimeout(timer)
+    })
+    return () => clearTimeout(timer)
+  }, [])
 
   return (
     <div className="page-load-animate">
@@ -106,7 +84,17 @@ export default function FarewellPage() {
                 style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 24 }}
               >
                 {events.map((ev) => (
-                  <EventCard key={ev.id} {...ev} />
+                  <EventCard key={ev.id}
+                    id={ev.id}
+                    title={ev.title}
+                    date={ev.event_date}
+                    location={ev.city || ev.venue}
+                    hostInitial={(ev.host_name || 'H')[0]}
+                    hostName={ev.host_name || 'Host'}
+                    category={ev.category}
+                    spots={ev.spots_remaining}
+                    ticket_price={ev.ticket_price}
+                  />
                 ))}
               </div>
             ) : !loading ? (

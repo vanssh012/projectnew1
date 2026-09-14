@@ -1,43 +1,39 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-import AuthGuard from "../components/AuthGuard";
-import { supabase } from "../../lib/supabase";
-import { QRCodeSVG } from "qrcode.react";
+'use client'
+import { useEffect, useState } from 'react'
+import Navbar from '../components/Navbar'
+import Footer from '../components/Footer'
+import AuthGuard from '../components/AuthGuard'
+import { supabase } from '@/lib/supabase'
+import { QRCodeSVG } from 'qrcode.react'
 
 export default function TicketsPage() {
-  const [tickets, setTickets] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [tickets, setTickets] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchTickets = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session } } = await supabase.auth.getSession()
       if (!session) {
-        setLoading(false);
-        return;
+        setLoading(false)
+        return
       }
 
       const { data, error } = await supabase
         .from('tickets')
         .select('*, events(id, title, name, event_date, date, city, venue, cover_image_url)')
         .eq('user_id', session.user.id)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
 
       if (!error && data) {
-        setTickets(data);
+        setTickets(data)
       }
-      setLoading(false);
-    };
+      setLoading(false)
+    }
 
-    const timeout = setTimeout(() => {
-      setLoading(false);
-    }, 5000);
-    return () => clearTimeout(timeout);
-
-    fetchTickets();
-  }, []);
+    const timeout = setTimeout(() => setLoading(false), 5000)
+    fetchTickets()
+    return () => clearTimeout(timeout)
+  }, [])
 
   return (
     <AuthGuard>
@@ -59,10 +55,10 @@ export default function TicketsPage() {
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
               {tickets.map(ticket => {
-                const event = ticket.events;
-                const title = event?.title || event?.name || "Event";
-                const date = event?.event_date || event?.date;
-                const location = event?.city || event?.venue;
+                const event = ticket.events
+                const title = event?.title || event?.name || "Event"
+                const date = event?.event_date || event?.date
+                const location = event?.city || event?.venue
 
                 return (
                   <div key={ticket.id} style={{ background: "var(--bg-card)", border: "0.5px solid rgba(255,255,255,0.08)", borderRadius: 20, overflow: "hidden", display: "flex", flexDirection: "column" }}>
@@ -84,7 +80,6 @@ export default function TicketsPage() {
                       </div>
                     </div>
 
-                    {/* QR Code Section for Approved Tickets */}
                     {ticket.status === 'approved' && (
                       <div style={{ padding: 24, background: "#FFF", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                         <div>
@@ -92,7 +87,7 @@ export default function TicketsPage() {
                           <div style={{ color: "rgba(0,0,0,0.5)", fontSize: 12 }}>Show this QR code at the venue.</div>
                         </div>
                         <div style={{ padding: 8, background: "#FFF", borderRadius: 8, border: "0.5px solid rgba(0,0,0,0.1)" }}>
-                          <QRCodeSVG 
+                          <QRCodeSVG
                             value={`afterly:${ticket.id}:${ticket.event_id}`}
                             size={80}
                             bgColor={"#ffffff"}
@@ -103,7 +98,7 @@ export default function TicketsPage() {
                       </div>
                     )}
                   </div>
-                );
+                )
               })}
             </div>
           )}
@@ -111,5 +106,5 @@ export default function TicketsPage() {
         <Footer />
       </div>
     </AuthGuard>
-  );
+  )
 }

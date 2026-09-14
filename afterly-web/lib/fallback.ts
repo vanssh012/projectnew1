@@ -1,32 +1,12 @@
-export type FallbackEvent = {
-  id: string;
-  category: 'farewell' | 'freshers' | 'house_party';
-  title: string;
-  college: string | null;
-  batch: string | null;
-  venue: string;
-  city: string;
-  event_date: string;
-  max_guests: number;
-  ticket_price: number;
-  approved_count: number;
-  spots_remaining: number;
-  access_type: string;
-  requires_approval: boolean;
-  status: string;
-  host_name: string;
-  host_verified: boolean;
-  host_total_events: number;
-  avg_rating: number;
-  theme_tags: string[];
-  theme_description: string;
-};
-
-export const FALLBACK_EVENTS: FallbackEvent[] = [
+export const FALLBACK_EVENTS = [
   {
     id: '083497be-7354-4234-a19b-5b77393c8d35',
+    host_id: '00000000-0000-0000-0000-000000000001',
     category: 'farewell',
     title: 'Golden Memories Farewell Night',
+    description: 'Send off the batch of 2025 in style.',
+    theme_description: 'Retro Bollywood night — mandatory ethnic outfit, photo booth with props, surprise performances, dinner included.',
+    theme_tags: ['DJ Night', 'Bollywood', 'Photo Booth', 'Dinner Included', 'Dress Code'],
     college: 'DTU Delhi',
     batch: 'Batch of 2025',
     venue: 'Rohini, New Delhi',
@@ -34,22 +14,28 @@ export const FALLBACK_EVENTS: FallbackEvent[] = [
     event_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
     max_guests: 40,
     ticket_price: 59900,
-    approved_count: 28,
-    spots_remaining: 12,
+    cover_image_url: null,
     access_type: 'application',
     requires_approval: true,
+    college_email_only: true,
+    show_guest_list: true,
     status: 'published',
     host_name: 'Rohan Kumar',
     host_verified: true,
     host_total_events: 6,
+    approved_count: 28,
+    spots_remaining: 12,
     avg_rating: 4.9,
-    theme_tags: ['DJ Night', 'Bollywood', 'Photo Booth', 'Dinner Included'],
-    theme_description: 'Retro Bollywood night — mandatory ethnic outfit, photo booth, dinner.',
+    review_count: 14,
   },
   {
     id: '6746a337-f4ba-4f75-ad2b-0dad62938b28',
+    host_id: '00000000-0000-0000-0000-000000000001',
     category: 'freshers',
     title: 'Welcome to the Jungle — Freshers Night 2025',
+    description: 'First night of your college life. Make it unforgettable.',
+    theme_description: 'Neon jungle theme — wear neon or animal print. Giant games, DJ set, free dinner, secret surprise at midnight.',
+    theme_tags: ['Neon Theme', 'DJ Night', 'Games', 'Dinner Included', 'Introductions'],
     college: 'IIT Delhi',
     batch: 'Batch of 2029',
     venue: 'Hauz Khas, New Delhi',
@@ -57,22 +43,28 @@ export const FALLBACK_EVENTS: FallbackEvent[] = [
     event_date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
     max_guests: 80,
     ticket_price: 0,
-    approved_count: 45,
-    spots_remaining: 35,
+    cover_image_url: null,
     access_type: 'open',
     requires_approval: false,
+    college_email_only: true,
+    show_guest_list: true,
     status: 'published',
     host_name: 'Sneha Verma',
     host_verified: true,
     host_total_events: 3,
+    approved_count: 45,
+    spots_remaining: 35,
     avg_rating: 0,
-    theme_tags: ['Neon Theme', 'DJ Night', 'Games', 'Introductions'],
-    theme_description: 'Neon jungle theme — wear neon or animal print. DJ, games, dinner.',
+    review_count: 0,
   },
   {
     id: '62dc2efd-84cd-43dd-b967-31da078164fe',
+    host_id: '00000000-0000-0000-0000-000000000001',
     category: 'house_party',
     title: 'Retro Neon House Party',
+    description: 'Exclusive themed night. You know the vibe.',
+    theme_description: '90s retro meets neon rave. BYOB, curated playlist, rooftop access after midnight. 30 people max.',
+    theme_tags: ['Neon Theme', 'Retro', 'BYOB', 'Rooftop', 'DJ Night'],
     college: null,
     batch: null,
     venue: 'Lajpat Nagar, New Delhi',
@@ -80,16 +72,18 @@ export const FALLBACK_EVENTS: FallbackEvent[] = [
     event_date: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString(),
     max_guests: 30,
     ticket_price: 49900,
-    approved_count: 18,
-    spots_remaining: 12,
+    cover_image_url: null,
     access_type: 'invite_only',
     requires_approval: true,
+    college_email_only: false,
+    show_guest_list: false,
     status: 'published',
     host_name: 'Arjun Mehta',
     host_verified: true,
     host_total_events: 4,
+    approved_count: 18,
+    spots_remaining: 12,
     avg_rating: 0,
-    theme_tags: ['Neon Theme', 'Retro', 'BYOB', 'Rooftop'],
-    theme_description: '90s retro meets neon rave. BYOB, rooftop after midnight.',
+    review_count: 0,
   },
-];
+]

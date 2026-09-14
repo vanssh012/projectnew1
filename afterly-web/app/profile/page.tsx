@@ -1,28 +1,22 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-import AuthGuard from "../components/AuthGuard";
-import { supabase, getStoredUser } from "../../lib/supabase";
+'use client'
+import { useEffect, useState } from 'react'
+import Link from 'next/link'
+import Navbar from '../components/Navbar'
+import Footer from '../components/Footer'
+import AuthGuard from '../components/AuthGuard'
+import { supabase } from '@/lib/supabase'
 
 export default function ProfilePage() {
-  const [phone, setPhone] = useState<string | null>(null);
+  const [phone, setPhone] = useState<string | null>(null)
 
   useEffect(() => {
-    const stored = getStoredUser();
-    if (stored) {
-      setPhone(stored.phone);
-      return;
-    }
-    (supabase.auth.getSession() as any).then(({ data }: any) => {
-      const session = data?.session;
+    supabase.auth.getSession().then(({ data }) => {
+      const session = data?.session
       if (session?.user?.phone) {
-        setPhone(session.user.phone);
+        setPhone(session.user.phone)
       }
-    });
-  }, []);
+    })
+  }, [])
 
   return (
     <AuthGuard>
@@ -80,5 +74,5 @@ export default function ProfilePage() {
         <Footer />
       </div>
     </AuthGuard>
-  );
+  )
 }

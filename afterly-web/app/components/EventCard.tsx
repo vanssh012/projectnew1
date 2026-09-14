@@ -5,30 +5,56 @@ import { useRouter } from "next/navigation";
 import { useToast } from "./ToastProvider";
 
 interface EventCardProps {
-  id: string | number;
-  title: string;
-  date: string;
-  location: string;
-  hostInitial: string;
-  hostName: string;
+  id?: string | number;
+  title?: string;
+  name?: string;
+  date?: string;
+  event_date?: string;
+  location?: string;
+  city?: string;
+  venue?: string;
+  hostInitial?: string;
+  hostName?: string;
+  host_name?: string;
   category: "farewell" | "freshers" | "house_party";
-  spots: number;
-  price: string;
+  spots?: number;
+  spots_remaining?: number;
+  price?: string;
+  ticket_price?: number;
 }
 
 export default function EventCard({
   id,
   title,
+  name,
   date,
+  event_date,
   location,
+  city,
+  venue,
   hostInitial,
   hostName,
+  host_name,
   category,
   spots,
+  spots_remaining,
   price,
+  ticket_price,
 }: EventCardProps) {
   const router = useRouter();
   const { showToast } = useToast();
+
+  const titleText = title || name || "Event";
+  const dateStr = date || event_date || "";
+  const locationStr = location || city || venue || "";
+  const hostNameText = hostName || host_name || "Host";
+  const initial = hostInitial || (hostNameText || "H")[0];
+  const spotsText = spots ?? spots_remaining ?? 0;
+  const priceText =
+    price ||
+    (ticket_price && Number(ticket_price) > 0
+      ? `₹${(Number(ticket_price) / 100).toLocaleString("en-IN")}`
+      : "Free");
 
   let bg = "#1E1A0E";
   let symbol = "✦";
@@ -47,12 +73,12 @@ export default function EventCard({
   const handleShare = async (e: React.MouseEvent) => {
     e.stopPropagation();
     const url = `${window.location.origin}/events/${id}`;
-    
+
     if (navigator.share) {
       try {
         await navigator.share({
-          title: title,
-          text: `Check out this event on Afterly — ${title}`,
+          title: titleText,
+          text: `Check out this event on Afterly — ${titleText}`,
           url: url,
         });
       } catch (err) {
@@ -69,8 +95,7 @@ export default function EventCard({
       <div className="card-img" style={{ background: bg }}>
         <span className="card-symbol">{symbol}</span>
         <span className="card-badge">{badgeText}</span>
-        
-        {/* SHARE BUTTON */}
+
         <button className="share-btn" onClick={handleShare}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
@@ -80,21 +105,21 @@ export default function EventCard({
         </button>
 
         <div className="card-gradient">
-          <div className="card-title-overlay">{title}</div>
+          <div className="card-title-overlay">{titleText}</div>
         </div>
       </div>
       <div className="card-body">
         <div className="card-meta">
-          {date} · {location}
+          {dateStr} · {locationStr}
         </div>
         <div className="card-host">
-          <div className="card-host-avatar">{hostInitial}</div>
-          <span className="card-host-name">hosted by {hostName}</span>
+          <div className="card-host-avatar">{initial}</div>
+          <span className="card-host-name">hosted by {hostNameText}</span>
           <span className="card-verified-dot" />
         </div>
         <div className="card-bottom">
-          <div className="card-price">{price}</div>
-          <div className="card-spots">{spots} spots left</div>
+          <div className="card-price">{priceText}</div>
+          <div className="card-spots">{spotsText} spots left</div>
         </div>
       </div>
 

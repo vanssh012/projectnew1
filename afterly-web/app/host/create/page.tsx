@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import EventCard from "../../components/EventCard";
 import AuthGuard from "../../components/AuthGuard";
-import { createEvent } from "../../../lib/supabase";
+import { supabase } from "@/lib/supabase";
 
 function CreateEventForm() {
   const router = useRouter();
@@ -78,33 +78,41 @@ function CreateEventForm() {
     setIsPublishing(true);
 
     try {
-      const result = await createEvent({
-        name: formData.name,
-        category: type,
-        college: formData.college,
-        batch: formData.batch,
-        event_date: formData.date,
-        event_time: formData.time,
-        venue: formData.venue,
-        city: formData.city,
-        max_guests: Number(formData.maxGuests || 0),
-        ticket_price: formData.isFree ? 0 : Number(formData.price || 0) * 100,
-        host_name: "You",
-        description: formData.description,
-        status: "published",
-        tags: formData.tags,
-      });
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) { router.push('/signin'); return }
 
-      if (result.error || !result.event) {
-        throw new Error("Unable to publish event");
-      }
+      const { data: newEvent, error } = await supabase
+        .from('events')
+        .insert({
+          host_id: user.id,
+          category: type,
+          title: formData.name,
+          description: formData.description,
+          theme_description: formData.description,
+          theme_tags: formData.tags,
+          college: formData.college || null,
+          batch: formData.batch || null,
+          venue: formData.venue,
+          city: formData.city,
+          event_date: formData.date ? `${formData.date}T${formData.time || '00:00'}:00` : '',
+          max_guests: parseInt(formData.maxGuests || '0', 10),
+          ticket_price: formData.isFree ? 0 : Number(formData.price || 0) * 100,
+          access_type: formData.accessControl === 'open' ? 'open' : formData.accessControl === 'invite' ? 'invite_only' : 'application',
+          requires_approval: formData.accessControl !== 'open',
+          college_email_only: type !== 'house_party' ? formData.collegeOnly : false,
+          show_guest_list: formData.showGuestList,
+          status: 'published'
+        })
+        .select()
+        .single()
 
-      router.push(`/host/dashboard/${result.event.id}`);
+      if (error || !newEvent) { setIsPublishing(false); return }
+      router.push('/events/' + newEvent.id)
     } catch (error) {
-      console.error(error);
-      setIsPublishing(false);
+      console.error(error)
+      setIsPublishing(false)
     }
-  };
+  }
 
   return (
     <div style={{ display: "flex", minHeight: "100vh", background: "var(--bg-primary)" }}>

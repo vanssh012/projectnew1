@@ -1,56 +1,38 @@
-"use client";
+'use client'
+import { useState, useEffect } from 'react'
+import Navbar from '../components/Navbar'
+import Footer from '../components/Footer'
+import EventCard from '../components/EventCard'
+import ScrollReveal from '../components/ScrollReveal'
+import { fetchEvents } from '../lib/fetchEvents'
+import { FALLBACK_EVENTS } from '../lib/fallback'
 
-import { useState, useEffect } from "react";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-import EventCard from "../components/EventCard";
-import ScrollReveal from "../components/ScrollReveal";
-import { supabase } from "../../lib/supabase";
-import { getFallbackCards, fetchEvents } from "../../lib/events";
-
-const CITIES = ["All Cities", "Delhi NCR", "Bangalore", "Mumbai", "Pune", "Goa"];
+const CITIES = ['All Cities', 'Delhi NCR', 'Bangalore', 'Mumbai', 'Pune', 'Goa']
 
 export default function ExplorePage() {
-  const [filter, setFilter] = useState<"all" | "farewell" | "freshers" | "house_party">("all");
-  const [city, setCity] = useState("All Cities");
-  const [events, setEvents] = useState(() => getFallbackCards("all", "All Cities"));
-  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<"all" | "farewell" | "freshers" | "house_party">("all")
+  const [city, setCity] = useState("All Cities")
+  const [events, setEvents] = useState(FALLBACK_EVENTS)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    setEvents(getFallbackCards(filter, city));
-    setLoading(true);
+    setLoading(true)
 
-    const load = async () => {
-      try {
-        const data = await fetchEvents(filter, city);
-        const fallback = getFallbackCards(filter, city);
-        setEvents(data.length > 0 ? data : fallback);
-      } catch {
-        setEvents(getFallbackCards(filter, city));
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
+    const timer = setTimeout(() => setLoading(false), 4000)
+    fetchEvents(filter, city).then(data => {
+      setEvents(data)
+      setLoading(false)
+      clearTimeout(timer)
+    })
 
-    const channel = supabase
-      .channel("events")
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "events" }, () => load())
-      .subscribe();
+    return () => clearTimeout(timer)
+  }, [filter, city])
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [filter, city]);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setLoading(false);
-    }, 5000);
-    return () => clearTimeout(timeout);
-  }, []);
-
-  const filteredEvents = events;
+  const filteredEvents = events.filter(ev => {
+    if (filter !== 'all' && ev.category !== filter) return false
+    if (city !== 'All Cities' && ev.city !== city) return false
+    return true
+  })
 
   return (
     <div className="page-load-animate">
@@ -157,7 +139,17 @@ export default function ExplorePage() {
               <div className="events-grid">
                 {filteredEvents.map((ev) => (
                   <div key={ev.id} className="fade-section">
-                    <EventCard {...ev} />
+                    <EventCard
+                      id={ev.id}
+                      title={ev.title}
+                      date={ev.event_date}
+                      location={ev.city || ev.venue}
+                      hostInitial={(ev.host_name || 'H')[0]}
+                      hostName={ev.host_name || 'Host'}
+                      category={ev.category}
+                      spots={ev.spots_remaining}
+                      ticket_price={ev.ticket_price}
+                    />
                   </div>
                 ))}
               </div>
@@ -192,5 +184,5 @@ export default function ExplorePage() {
         }
       `}</style>
     </div>
-  );
+  )
 }

@@ -1,5 +1,5 @@
-import { supabase } from './supabase';
 import { FALLBACK_EVENTS, type FallbackEvent } from './fallback';
+import { fetchEvents as fetchEventsFromLib } from './fetchEvents';
 
 export type EventCardData = {
   id: string;
@@ -50,22 +50,8 @@ export function getFallbackCards(category?: string, city?: string): EventCardDat
 
 export async function fetchEvents(category?: string, city?: string): Promise<EventCardData[]> {
   try {
-    let query = supabase
-      .from('event_with_stats')
-      .select('*')
-      .eq('status', 'published')
-      .order('event_date', { ascending: true });
-
-    if (category && category !== 'all') {
-      query = query.eq('category', category);
-    }
-    if (city && city !== 'All Cities') {
-      query = query.eq('city', city);
-    }
-
-    const { data, error } = await query;
-    if (error) throw error;
-    if (!data || data.length === 0) return [];
+    const data = await fetchEventsFromLib(category, city);
+    if (!data || data.length === 0) return getFallbackCards(category, city);
 
     return data.map((ev: Record<string, unknown>) => ({
       id: String(ev.id),
@@ -74,7 +60,7 @@ export async function fetchEvents(category?: string, city?: string): Promise<Eve
       location: String(ev.city || ev.venue || ''),
       hostInitial: String(ev.host_name || 'H')[0],
       hostName: String(ev.host_name || 'Host'),
-      category: ev.category as EventCardData['category'],
+      category: (ev.category as EventCardData['category']) || 'farewell',
       spots: Number(ev.spots_remaining ?? ev.spots_left ?? 0),
       price:
         ev.ticket_price && Number(ev.ticket_price) > 0
@@ -83,6 +69,6 @@ export async function fetchEvents(category?: string, city?: string): Promise<Eve
       city: ev.city ? String(ev.city) : undefined,
     }));
   } catch {
-    return [];
+    return getFallbackCards(category, city);
   }
 }
