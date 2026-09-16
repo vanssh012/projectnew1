@@ -4,8 +4,8 @@ import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import EventCard from '../components/EventCard'
 import ScrollReveal from '../components/ScrollReveal'
-import { fetchEvents } from '../lib/fetchEvents'
-import { FALLBACK_EVENTS } from '../lib/fallback'
+import { fetchEvents } from '../../lib/fetchEvents'
+import { FALLBACK_EVENTS } from '../../lib/fallback'
 
 const CITIES = ['All Cities', 'Delhi NCR', 'Bangalore', 'Mumbai', 'Pune', 'Goa']
 
