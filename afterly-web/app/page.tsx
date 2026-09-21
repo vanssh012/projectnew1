@@ -8,7 +8,11 @@ import { FALLBACK_EVENTS } from "../lib/fallback";
 
 function formatHeroDate(dateStr: string): string {
   try {
-    return new Date(dateStr).toLocaleDateString("en-US", { month: "long", day: "numeric" });
+    return new Date(dateStr).toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
   } catch {
     return dateStr;
   }
@@ -25,8 +29,10 @@ export default function LandingPage() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const card1 = FALLBACK_EVENTS[0];
-  const card2 = FALLBACK_EVENTS[1];
+  const farewellEvent = FALLBACK_EVENTS.find(e => e.category === "farewell");
+  const freshersEvent = FALLBACK_EVENTS.find(e => e.category === "freshers");
+  const card1 = farewellEvent || FALLBACK_EVENTS.find(e => e.category !== "house_party") || FALLBACK_EVENTS[0];
+  const card2 = freshersEvent || FALLBACK_EVENTS.find(e => e.category !== "farewell") || FALLBACK_EVENTS[1];
 
   return (
     <div className="page-load-animate">

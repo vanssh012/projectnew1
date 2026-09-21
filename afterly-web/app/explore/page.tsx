@@ -146,6 +146,7 @@ export default function ExplorePage() {
                       location={ev.city || ev.venue}
                       hostInitial={(ev.host_name || 'H')[0]}
                       hostName={ev.host_name || 'Host'}
+                      hostId={ev.host_id}
                       category={ev.category}
                       spots={ev.spots_remaining}
                       ticket_price={ev.ticket_price}

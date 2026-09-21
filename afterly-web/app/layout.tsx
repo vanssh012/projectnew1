@@ -11,7 +11,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://afterlydemo.loca.lt"),
+  metadataBase: new URL("https://projectnew1-two.vercel.app"),
   title: "Afterly — Your People. Your Night.",
   description:
     "Discover and host curated college events — farewells, freshers nights, and themed house parties. Verified hosts, approval-based entry, unforgettable nights.",

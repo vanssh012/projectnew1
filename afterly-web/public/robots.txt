@@ -3,4 +3,4 @@ Allow: /
 Disallow: /host/dashboard
 Disallow: /tickets
 Disallow: /profile
-Sitemap: https://afterlydemo.loca.lt/sitemap.xml
+Sitemap: https://projectnew1-two.vercel.app/sitemap.xml

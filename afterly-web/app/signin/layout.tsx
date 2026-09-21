@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://afterlydemo.loca.lt"),
+  metadataBase: new URL("https://projectnew1-two.vercel.app"),
   title: "Sign In — Afterly",
   openGraph: { siteName: "Afterly", images: ["/og-image.png"] },
 };

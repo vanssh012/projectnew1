@@ -4,7 +4,18 @@ import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import AuthGuard from '../components/AuthGuard'
 import { supabase } from '@/lib/supabase'
-import { QRCodeSVG } from 'qrcode.react'
+import QRTicket from '../components/QRTicket'
+
+function formatDate(dateStr: string) {
+  if (!dateStr) return "";
+  const date = new Date(dateStr);
+  if (Number.isNaN(date.getTime())) return "";
+  return date.toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
 
 export default function TicketsPage() {
   const [tickets, setTickets] = useState<any[]>([])
@@ -20,7 +31,7 @@ export default function TicketsPage() {
 
       const { data, error } = await supabase
         .from('tickets')
-        .select('*, events(id, title, name, event_date, date, city, venue, cover_image_url)')
+        .select('*, events(id, title, event_date, city, venue, cover_image_url, category, ticket_price)')
         .eq('user_id', session.user.id)
         .order('created_at', { ascending: false })
 
@@ -59,6 +70,7 @@ export default function TicketsPage() {
                 const title = event?.title || event?.name || "Event"
                 const date = event?.event_date || event?.date
                 const location = event?.city || event?.venue
+                const formattedDate = formatDate(date || "")
 
                 return (
                   <div key={ticket.id} style={{ background: "var(--bg-card)", border: "0.5px solid rgba(255,255,255,0.08)", borderRadius: 20, overflow: "hidden", display: "flex", flexDirection: "column" }}>
@@ -66,7 +78,7 @@ export default function TicketsPage() {
                       <div>
                         <h3 style={{ fontSize: 24, fontWeight: 600, color: "#FFF", marginBottom: 8 }}>{title}</h3>
                         <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 14 }}>
-                          {date} · {location}
+                          {formattedDate} · {location}
                         </div>
                       </div>
                       <div>
@@ -80,23 +92,7 @@ export default function TicketsPage() {
                       </div>
                     </div>
 
-                    {ticket.status === 'approved' && (
-                      <div style={{ padding: 24, background: "#FFF", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                        <div>
-                          <div style={{ color: "#000", fontSize: 16, fontWeight: 600, marginBottom: 4 }}>Entry Pass</div>
-                          <div style={{ color: "rgba(0,0,0,0.5)", fontSize: 12 }}>Show this QR code at the venue.</div>
-                        </div>
-                        <div style={{ padding: 8, background: "#FFF", borderRadius: 8, border: "0.5px solid rgba(0,0,0,0.1)" }}>
-                          <QRCodeSVG
-                            value={`afterly:${ticket.id}:${ticket.event_id}`}
-                            size={80}
-                            bgColor={"#ffffff"}
-                            fgColor={"#000000"}
-                            level={"Q"}
-                          />
-                        </div>
-                      </div>
-                    )}
+                    <div style={{ padding: 24 }}><QRTicket ticket={ticket} event={event} /></div>
                   </div>
                 )
               })}

@@ -1,4 +1,7 @@
+"use client";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { supabase } from "../../lib/supabase";
 
 function LogoIcon({ size = 28 }: { size?: number }) {
   return (
@@ -20,6 +23,14 @@ function LogoIcon({ size = 28 }: { size?: number }) {
 }
 
 export default function Navbar() {
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user);
+    });
+  }, []);
+
   return (
     <nav
       style={{
@@ -81,20 +92,28 @@ export default function Navbar() {
 
       {/* Right */}
       <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
-        <Link
-          href="/host/dashboard"
-          style={{
-            fontSize: 14,
-            color: "rgba(255,255,255,0.5)",
-            transition: "color 0.2s",
-          }}
-          className="nav-link-host"
-        >
-          Dashboard
-        </Link>
-        <Link href="/signin" className="btn-pill">
-          sign in
-        </Link>
+        {user && (
+          <Link
+            href="/host/dashboard"
+            style={{
+              fontSize: 14,
+              color: "rgba(255,255,255,0.5)",
+              transition: "color 0.2s",
+            }}
+            className="nav-link-host"
+          >
+            Dashboard
+          </Link>
+        )}
+        {user ? (
+          <Link href="/profile/me" className="btn-pill">
+            my profile
+          </Link>
+        ) : (
+          <Link href="/signin" className="btn-pill">
+            sign in
+          </Link>
+        )}
       </div>
 
       <style>{`

@@ -1,8 +1,20 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useToast } from "./ToastProvider";
+
+function formatDate(dateStr: string) {
+  if (!dateStr) return "";
+  const date = new Date(dateStr);
+  if (Number.isNaN(date.getTime())) return "";
+  return date.toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
 
 interface EventCardProps {
   id?: string | number;
@@ -16,6 +28,8 @@ interface EventCardProps {
   hostInitial?: string;
   hostName?: string;
   host_name?: string;
+  hostId?: string;
+  host_id?: string;
   category: "farewell" | "freshers" | "house_party";
   spots?: number;
   spots_remaining?: number;
@@ -35,6 +49,8 @@ export default function EventCard({
   hostInitial,
   hostName,
   host_name,
+  hostId,
+  host_id,
   category,
   spots,
   spots_remaining,
@@ -48,6 +64,7 @@ export default function EventCard({
   const dateStr = date || event_date || "";
   const locationStr = location || city || venue || "";
   const hostNameText = hostName || host_name || "Host";
+  const hostProfileId = hostId || host_id;
   const initial = hostInitial || (hostNameText || "H")[0];
   const spotsText = spots ?? spots_remaining ?? 0;
   const priceText =
@@ -55,6 +72,7 @@ export default function EventCard({
     (ticket_price && Number(ticket_price) > 0
       ? `₹${(Number(ticket_price) / 100).toLocaleString("en-IN")}`
       : "Free");
+  const formattedDate = formatDate(dateStr);
 
   let bg = "#1E1A0E";
   let symbol = "✦";
@@ -110,11 +128,22 @@ export default function EventCard({
       </div>
       <div className="card-body">
         <div className="card-meta">
-          {dateStr} · {locationStr}
+          {formattedDate} · {locationStr}
         </div>
         <div className="card-host">
           <div className="card-host-avatar">{initial}</div>
-          <span className="card-host-name">hosted by {hostNameText}</span>
+          {hostProfileId ? (
+            <Link
+              href={`/profile/${hostProfileId}`}
+              className="card-host-name"
+              onClick={(event) => event.stopPropagation()}
+              onPointerDown={(event) => event.stopPropagation()}
+            >
+              hosted by {hostNameText}
+            </Link>
+          ) : (
+            <span className="card-host-name">hosted by {hostNameText}</span>
+          )}
           <span className="card-verified-dot" />
         </div>
         <div className="card-bottom">
