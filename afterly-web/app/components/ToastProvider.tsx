@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, ReactNode } from "react";
 
 interface ToastContextType {
   showToast: (message: string) => void;
@@ -10,17 +10,23 @@ const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toast, setToast] = useState<string | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const showToast = (message: string) => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
     setToast(message);
-    setTimeout(() => setToast(null), 3000);
+    timeoutRef.current = setTimeout(() => setToast(null), 2500);
   };
+
+  useEffect(() => () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+  }, []);
 
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}
       {toast && (
-        <div style={{
+        <div role="status" aria-live="polite" style={{
           position: "fixed", bottom: 40, left: "50%", transform: "translateX(-50%)",
           background: "#111", color: "#FFF", padding: "12px 20px", borderRadius: 12,
           border: "0.5px solid rgba(255,255,255,0.1)",

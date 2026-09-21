@@ -3,17 +3,18 @@ import { useState, useEffect } from 'react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import EventCard from '../components/EventCard'
+import SkeletonCard from '../components/SkeletonCard'
 import ScrollReveal from '../components/ScrollReveal'
 import { fetchEvents } from '../../lib/fetchEvents'
-import { FALLBACK_EVENTS } from '../../lib/fallback'
 
 const CITIES = ['All Cities', 'Delhi NCR', 'Bangalore', 'Mumbai', 'Pune', 'Goa']
 
 export default function ExplorePage() {
   const [filter, setFilter] = useState<"all" | "farewell" | "freshers" | "house_party">("all")
   const [city, setCity] = useState("All Cities")
-  const [events, setEvents] = useState(FALLBACK_EVENTS)
+  const [events, setEvents] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [filterTransition, setFilterTransition] = useState(false)
 
   useEffect(() => {
     setLoading(true)
@@ -27,6 +28,12 @@ export default function ExplorePage() {
 
     return () => clearTimeout(timer)
   }, [filter, city])
+
+  const handleCategoryChange = (category: typeof filter) => {
+    setFilterTransition(true)
+    setFilter(category)
+    window.setTimeout(() => setFilterTransition(false), 150)
+  }
 
   const filteredEvents = events.filter(ev => {
     if (filter !== 'all' && ev.category !== filter) return false
@@ -52,7 +59,7 @@ export default function ExplorePage() {
       <div
         style={{
           position: "sticky",
-          top: 52,
+          top: 56,
           zIndex: 90,
           background: "rgba(0,0,0,0.85)",
           backdropFilter: "blur(20px)",
@@ -80,7 +87,7 @@ export default function ExplorePage() {
             ].map((cat) => (
               <button
                 key={cat.id}
-                onClick={() => setFilter(cat.id as typeof filter)}
+                onClick={() => handleCategoryChange(cat.id as typeof filter)}
                 style={{
                   padding: "8px 16px",
                   borderRadius: 100,
@@ -134,9 +141,13 @@ export default function ExplorePage() {
 
       <section style={{ padding: "40px 24px 80px", minHeight: "50vh" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-          {filteredEvents.length > 0 ? (
+          {loading ? (
+            <div className="events-grid">
+              {[0, 1, 2].map((item) => <SkeletonCard key={item} />)}
+            </div>
+          ) : filteredEvents.length > 0 ? (
             <ScrollReveal stagger>
-              <div className="events-grid">
+              <div className="events-grid" style={{ opacity: filterTransition ? 0 : 1, transition: "opacity 0.15s ease" }}>
                 {filteredEvents.map((ev) => (
                   <div key={ev.id} className="fade-section">
                     <EventCard

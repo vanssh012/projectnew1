@@ -3,12 +3,12 @@ import { useState, useEffect } from 'react'
 import Navbar from "../components/Navbar"
 import Footer from "../components/Footer"
 import EventCard from "../components/EventCard"
+import SkeletonCard from "../components/SkeletonCard"
 import ScrollReveal from "../components/ScrollReveal"
 import { fetchEvents } from "../../lib/fetchEvents"
-import { FALLBACK_EVENTS } from "../../lib/fallback"
 
 export default function HousePartyPage() {
-  const [events, setEvents] = useState(FALLBACK_EVENTS)
+  const [events, setEvents] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -80,7 +80,11 @@ export default function HousePartyPage() {
               current house parties.
             </h2>
 
-            {events.length > 0 ? (
+            {loading ? (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 24 }}>
+                {[0, 1, 2].map((item) => <SkeletonCard key={item} />)}
+              </div>
+            ) : events.length > 0 ? (
               <div
                 className="fade-section"
                 style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 24 }}

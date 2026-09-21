@@ -1,7 +1,8 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import CustomCursor from "./components/CustomCursor";
+import PageTransition from "./components/PageTransition";
 import { ToastProvider } from "./components/ToastProvider";
 
 const inter = Inter({
@@ -19,6 +20,19 @@ export const metadata: Metadata = {
     siteName: "Afterly",
     images: ["/og-image.png"],
   },
+  other: {
+    "mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-status-bar-style": "black-translucent",
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  userScalable: false,
+  themeColor: "#000000",
 };
 
 export default function RootLayout({
@@ -31,7 +45,7 @@ export default function RootLayout({
       <body>
         <ToastProvider>
           <CustomCursor />
-          {children}
+          <PageTransition>{children}</PageTransition>
         </ToastProvider>
       </body>
     </html>

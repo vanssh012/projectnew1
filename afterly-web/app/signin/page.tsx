@@ -10,6 +10,8 @@ export default function SignInPage() {
   const [otp, setOtp] = useState(['','','','','',''])
   const [name, setName] = useState('')
   const [loading, setLoading] = useState(false)
+  const [transitioning, setTransitioning] = useState(false)
+  const [focusedOtp, setFocusedOtp] = useState<number | null>(null)
   const [error, setError] = useState('')
   const [countdown, setCountdown] = useState(0)
   const otpRefs = useRef<(HTMLInputElement|null)[]>([])
@@ -33,7 +35,12 @@ export default function SignInPage() {
     try {
       const { error: err } = await supabase.auth.signInWithOtp({ phone: '+91' + cleaned })
       if (err) { setError(err.message); return }
-      setStep('otp'); setCountdown(30)
+      setTransitioning(true)
+      window.setTimeout(() => {
+        setStep('otp')
+        setCountdown(30)
+        setTransitioning(false)
+      }, 200)
     } catch { setError('connection failed. try again.') }
     finally { setLoading(false) }
   }
@@ -94,6 +101,11 @@ export default function SignInPage() {
       <div style={s.card}>
         <div style={s.logo}>✦ afterly</div>
 
+        <div style={{
+          opacity: transitioning ? 0 : 1,
+          transform: transitioning ? 'translateX(20px)' : 'translateX(0)',
+          transition: 'opacity 0.2s ease, transform 0.2s ease',
+        }}>
         {step === 'phone' && <>
           <h1 style={s.h1}>welcome back.</h1>
           <p style={s.sub}>enter your phone number to continue.</p>
@@ -109,7 +121,7 @@ export default function SignInPage() {
           </div>
           {error && <div style={s.err}>{error}</div>}
           <button onClick={sendOTP} disabled={loading||phone.length!==10} style={{...s.btn,opacity:loading||phone.length!==10?0.5:1}}>
-            {loading ? 'sending...' : 'send otp →'}
+            {loading ? <>sending <span style={{ display: 'inline-block', marginLeft: 4, animation: 'spin 0.6s linear infinite' }}>⟳</span></> : 'send otp →'}
           </button>
           <div style={{marginTop:24,fontSize:12,color:'rgba(255,255,255,0.2)',textAlign:'center',lineHeight:1.6}}>
             by continuing you agree to our terms and privacy policy
@@ -125,11 +137,15 @@ export default function SignInPage() {
                 key={i} ref={el=>{otpRefs.current[i]=el}}
                 type="tel" inputMode="numeric" maxLength={1} value={d}
                 onChange={e=>handleOtpChange(i,e.target.value)}
+                onFocus={() => setFocusedOtp(i)}
+                onBlur={() => setFocusedOtp(null)}
                 onKeyDown={e=>{if(e.key==='Backspace'&&!d&&i>0)otpRefs.current[i-1]?.focus()}}
                 style={{
                   flex:1,height:60,textAlign:'center',fontSize:24,fontWeight:500,
                   background:'#111',border:`0.5px solid ${d?'rgba(255,255,255,0.4)':'rgba(255,255,255,0.1)'}`,
-                  borderRadius:12,color:'#fff',fontFamily:'Inter,sans-serif',outline:'none'
+                  borderRadius:12,color:'#fff',fontFamily:'Inter,sans-serif',outline:'none',
+                  transition:'border-color 0.15s, transform 0.15s',
+                  transform: focusedOtp === i ? 'scale(1.04)' : 'scale(1)'
                 }}
               />
             ))}
@@ -161,6 +177,7 @@ export default function SignInPage() {
             {loading ? 'saving...' : "let's go →"}
           </button>
         </>}
+        </div>
       </div>
     </div>
   )

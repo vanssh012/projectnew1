@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import { useToast } from '../../components/ToastProvider'
 
 const CATEGORY_COLORS: Record<string, string> = {
   farewell: '#C9A050',
@@ -20,6 +21,7 @@ const CATEGORY_SYMBOLS: Record<string, string> = {
 export default function ProfilePage() {
   const params = useParams()
   const router = useRouter()
+  const { showToast } = useToast()
   const profileId = params?.id as string
   const [profile, setProfile] = useState<any>(null)
   const [events, setEvents] = useState<any[]>([])
@@ -76,6 +78,7 @@ export default function ProfilePage() {
     if (!error) {
       setProfile((previous: any) => ({ ...previous, ...values }))
       setEditing(false)
+      showToast('profile updated ✓')
     }
     setSaving(false)
   }
@@ -144,7 +147,7 @@ export default function ProfilePage() {
         {upcoming.length > 0 && <section style={{ marginBottom: 32 }}><div style={styles.sectionLabel}>upcoming events · {upcoming.length}</div>{upcoming.map((event) => renderEvent(event))}</section>}
         {past.length > 0 && <section><div style={styles.sectionLabel}>past events · {past.length}</div>{past.map((event) => renderEvent(event, true))}</section>}
         {events.length === 0 && <div style={styles.empty}>no events hosted yet.{isOwnProfile && <><br /><Link href="/host" style={{ color: '#C9A050' }}>host your first event →</Link></>}</div>}
-        {isOwnProfile && <button onClick={async () => { await supabase.auth.signOut(); router.push('/') }} style={styles.signOut}>sign out</button>}
+        {isOwnProfile && <button onClick={async () => { await supabase.auth.signOut(); showToast('signed out'); router.push('/') }} style={styles.signOut}>sign out</button>}
       </div>
     </main>
   )

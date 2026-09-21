@@ -24,6 +24,7 @@ function LogoIcon({ size = 28 }: { size?: number }) {
 
 export default function Navbar() {
   const [user, setUser] = useState<any>(null);
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -31,21 +32,31 @@ export default function Navbar() {
     });
   }, []);
 
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
     <nav
       style={{
-        position: "sticky",
+        position: "fixed",
+        left: 0,
+        right: 0,
         top: 0,
         zIndex: 100,
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        height: 52,
+        height: 56,
         padding: "0 24px",
-        background: "rgba(0,0,0,0.72)",
+        background: scrolled ? "rgba(0,0,0,0.95)" : "rgba(0,0,0,0.7)",
         backdropFilter: "blur(20px)",
         WebkitBackdropFilter: "blur(20px)",
         borderBottom: "0.5px solid rgba(255,255,255,0.06)",
+        transition: "background 0.3s ease",
       }}
     >
       {/* Left */}

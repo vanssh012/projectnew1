@@ -45,6 +45,7 @@ export default function EventClientPage({ event }: { event: any }) {
   const { showToast } = useToast();
   const [loading, setLoading] = useState(false);
   const [ticketStatus, setTicketStatus] = useState<string | null>(null);
+  const [progress, setProgress] = useState(0);
 
   const cat = catInfo(event?.category);
   const priceFormatted = event.ticket_price && event.ticket_price > 0 ? `₹${event.ticket_price / 100}` : "Free";
@@ -68,6 +69,17 @@ export default function EventClientPage({ event }: { event: any }) {
     if (event?.id) checkExistingTicket();
   }, [event?.id]);
 
+  useEffect(() => {
+    const onScroll = () => {
+      const documentElement = document.documentElement;
+      const scrollHeight = documentElement.scrollHeight - documentElement.clientHeight;
+      setProgress(scrollHeight > 0 ? (documentElement.scrollTop / scrollHeight) * 100 : 0);
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   const handleShare = async () => {
     const url = window.location.href;
     if (navigator.share) {
@@ -80,7 +92,7 @@ export default function EventClientPage({ event }: { event: any }) {
       } catch (err) {}
     } else {
       navigator.clipboard.writeText(url);
-      showToast("link copied!");
+      showToast("✓ link copied");
     }
   };
 
@@ -187,8 +199,9 @@ export default function EventClientPage({ event }: { event: any }) {
   return (
     <div className="page-load-animate" style={{ background: cat.bg, minHeight: "100vh" }}>
       <Navbar />
+      <div style={{ position: "fixed", top: 56, left: 0, height: 2, zIndex: 99, width: `${progress}%`, background: "linear-gradient(90deg, #C9A050, #5ABFCF)", transition: "width 0.1s linear", borderRadius: "0 2px 2px 0" }} />
 
-      <main style={{ maxWidth: 800, margin: "0 auto", padding: "100px 24px 80px" }}>
+      <main style={{ maxWidth: 800, margin: "0 auto", padding: "100px 24px 170px" }}>
 
         {/* Cover Photo */}
         <div style={{ width: "100%", height: 300, background: "var(--bg-card)", borderRadius: 24, marginBottom: 40, position: "relative", overflow: "hidden" }}>
@@ -296,8 +309,8 @@ export default function EventClientPage({ event }: { event: any }) {
       </main>
 
       {/* Floating Action Bar */}
-      <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, padding: "20px 24px", background: cat.bg, backdropFilter: "blur(20px)", borderTop: "0.5px solid rgba(255,255,255,0.06)", display: "flex", justifyContent: "center" }}>
-        <div style={{ width: "100%", maxWidth: 800, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, padding: "12px 20px", paddingBottom: "max(12px, env(safe-area-inset-bottom))", background: "linear-gradient(to top, rgba(0,0,0,0.98) 60%, transparent)", zIndex: 50, pointerEvents: "none" }}>
+        <div style={{ width: "100%", maxWidth: 800, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center", pointerEvents: "all" }}>
           <div>
             <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>Total Price</div>
             <div style={{ color: "#FFF", fontSize: 20, fontWeight: 600 }}>{priceFormatted}</div>

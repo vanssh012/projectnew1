@@ -6,10 +6,12 @@ import Link from "next/link";
 import EventCard from "../../components/EventCard";
 import AuthGuard from "../../components/AuthGuard";
 import { supabase } from "@/lib/supabase";
+import { useToast } from "../../components/ToastProvider";
 
 function CreateEventForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { showToast } = useToast();
   const typeParam = searchParams.get("type");
   
   // Validate type
@@ -107,6 +109,7 @@ function CreateEventForm() {
         .single()
 
       if (error || !newEvent) { setIsPublishing(false); return }
+      showToast("event is live ✦");
       router.push('/events/' + newEvent.id)
     } catch (error) {
       console.error(error)

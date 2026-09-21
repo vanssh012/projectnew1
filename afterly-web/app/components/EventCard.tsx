@@ -104,7 +104,7 @@ export default function EventCard({
       }
     } else {
       navigator.clipboard.writeText(url);
-      showToast("link copied to clipboard");
+      showToast("✓ link copied");
     }
   };
 
@@ -158,13 +158,17 @@ export default function EventCard({
           border: 0.5px solid rgba(255,255,255,0.08);
           border-radius: 20px;
           overflow: hidden;
-          transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+          transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
           cursor: pointer;
         }
         .event-card:hover {
-          transform: translateY(-6px);
+          transform: translateY(-4px);
           border-color: rgba(255,255,255,0.15);
-          box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+          box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+        }
+        .event-card:active {
+          transform: translateY(-1px);
+          transition: transform 0.1s ease;
         }
         .card-img {
           height: 200px;
