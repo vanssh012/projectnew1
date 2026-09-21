@@ -1,0 +1,6 @@
+{
+  "framework": "nextjs",
+  "installCommand": "cd afterly-web && npm ci",
+  "buildCommand": "cd afterly-web && npm run build",
+  "outputDirectory": "afterly-web/.next"
+}
